@@ -99,3 +99,11 @@ return function(Window)
 	    Library:Notify("Discord invite copied.")
     end)
 end
+
+Tab:UpdateWarningBox({
+    Title = "Warning",
+    Text = "This script is a deobfuscated version of Abysall Continued. Please support them not me. I will still be making updates if i want.",
+    IsNormal = false,
+    Visible = true,
+    LockSize = true,
+})
