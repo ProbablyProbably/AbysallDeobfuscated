@@ -1,5 +1,5 @@
 --	Functions.Notify({Title = "Used For Notifications."})
-
+local LocalPlayer = game.Players.LocalPlayer
 local LoadStart = tick()
 
 if shared.Hastelepasta then
@@ -15,7 +15,7 @@ getgenv().Abysall = {
     Legit = true
 }
 
-local BaseUrl = "https://raw.githubusercontent.com/therealcookiemonsterof1966/AbysallContinued/main/"
+local BaseUrl = "https://raw.githubusercontent.com/ProbablyProbably/AbysallDeobfuscated/main/"
 
 getgenv().Abysall = {
     Environment = loadstring(game:HttpGet(BaseUrl .. "Components/Environment.luau"))(),
@@ -275,6 +275,10 @@ local Entities = {
 	["SallyMoving"] = {
 		Alias = "Sally",
 		NotifyMessage = { Title = "Entity 'Sally' has spawned.", Body = "Find her horse and rop it." }
+	},
+	["MirrorRig_Portrait_" .. LocalPlayer.Name] = {
+		Alias = "Portrait",
+		NotifyMessage = { Title = "Entity 'Portrait' has spawned.", Body = "Duplicate items with it." }
 	}
 }
 
@@ -744,7 +748,7 @@ end
 
 if not LocalPlayer.Character or not CurrentRooms:FindFirstChildOfClass("Model") then
 	Functions.Notify({ Title = "Waiting for the game to load..." })
-	queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/therealcookiemonsterof1966/AbysallContinued/main/Games/Doors/Main.luau"))()]])
+	queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/ProbablyProbably/AbysallDeobfuscated/main/Games/Doors/Main.luau"))()]])
 	while not LocalPlayer.Character or not CurrentRooms:FindFirstChildOfClass("Model") do
 		task.wait()
 	end
@@ -1212,7 +1216,7 @@ Functions.GetRandomCode = function()
 end
 
 local Window = Library:CreateWindow({
-	Title = "Abysall Hub Continued",
+	Title = "Abysall Deobfuscated",
 	Footer = "dsc.gg/abysallhubcontinued",
 	NotifySide = "Right",
 	ShowCustomCursor = false,
@@ -1226,7 +1230,7 @@ local Window = Library:CreateWindow({
 
 -- Data
 
-
+ 
 
 
 
@@ -1327,12 +1331,19 @@ Groupboxes.General_Self:AddToggle("DoorReachToggle", {
 Groupboxes.General_Self:AddToggle("DisableIdleKick", {
 	Text = "Disable Idle Kick", Default = false, Tooltip = "Prevents the kick from being idle for 20 minutes."
 })
+-- For some reason this breaks the script?
 Toggles.DisableIdleKick:OnChanged(function(Value)
-	if Functions.CheckCompatability({"getconnections"}) then
-		for _, Conn in Abysall.Environment.getconnections(LocalPlayer.Idled) do
-			if Value then Conn:Disable() else Conn:Enable() end
-		end
-	end
+    local getconn = getconnections or (Abysall and Abysall.Environment and Abysall.Environment.getconnections)
+    
+    if getconn then
+        for _, Conn in ipairs(getconn(game:GetService("Players").LocalPlayer.Idled)) do
+            if Value then
+                Conn:Disable()
+            else
+                Conn:Enable()
+            end
+        end
+    end
 end)
 LocalPlayer.Idled:Connect(function()
 	if Toggles.DisableIdleKick.Value then
@@ -2490,7 +2501,7 @@ Groupboxes.Exploits_BypassRight:AddToggle("VelocityManipulationToggle", {
 })
 Toggles.DisableAnticheat:OnChanged(function(Value)
 	if Globals.AnticheatDisabled == true and not Value then
-		RemotesFolder.ClimbLadder:FireServer()
+		RemotesFolder.SeatControl:FireServer()
 		Globals.AnticheatDisabled = false
 	end
 end)
@@ -2912,7 +2923,7 @@ Groupboxes.Visuals_EntitySettings = Groupboxes.Visuals_RightTab:AddTab("Settings
 
 Groupboxes.Visuals_Entities:AddDropdown("EntityList", {
 	Text = "Entity List",
-	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Halt","Blitz","Lookman","Gloombat Swarm","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Monument","AR0xMBUSH","RNIUSHCG==","Portrait" },
 	Multi = true, AllowNull = true
 })
 Groupboxes.Visuals_Entities:AddToggle("NotifyEntities",    { Text = "Notify Entities",    Default = false, Tooltip = "Sends a notification when an entity spawns." })
@@ -3048,7 +3059,7 @@ Groupboxes.Visuals_ESP_Toggles:AddToggle("LadderESPToggle",     { Text = "Ladder
 Groupboxes.Visuals_ESP_Toggles:AddDivider()
 Groupboxes.Visuals_ESP_Toggles:AddDropdown("EntityESPOptions",     { 
 	Text = "Entity List",
-	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==" },
+	Values = { "Rush","Bash","Scribbles","Teller","DronesStampede","Creak","Noise","Balls","Ambush","Eyes","Dupe","Figure","Blitz","Lookman","Snare","Giggle","Gloombat Eggs","Grumble","A-60","A-120","Sally","Jeff the Killer","Groundskeeper","Mandrake Hole","Monument","Bramble","AR0xMBUSH","RNIUSHCG==","Portrait" },
 	Multi = true,
 	AllowNull = true
 })
@@ -4278,7 +4289,7 @@ Functions.HandleCharacter = function(NewCharacter)
 		end
 
 		if Globals.SelfKilled and Globals.MainUI:FindFirstChild("Statistics") then
-			Globals.MainUI.Statistics.Death.Text = "Died to Abysall Hub"
+			Globals.MainUI.Statistics.Death.Text = "e"
 		end
 
 		local MainFrame = Globals.MainUI:FindFirstChild("MainFrame")
@@ -5945,46 +5956,6 @@ Library:OnUnload(function()
 	getgenv().Abysall = nil
 	shared.Hastelepasta = false
 end)
-
-
-if game.Players.LocalPlayer.Name == "Robloxiant0g2w2g3q" then
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "DiscordUsernameUI"
-    ScreenGui.ResetOnSpawn = false
-    ScreenGui.Parent = game.CoreGui
-
-    local Frame = Instance.new("Frame")
-    Frame.Size = UDim2.fromOffset(350, 120)
-    Frame.Position = UDim2.fromScale(0.5, 0.5)
-    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    Frame.BorderSizePixel = 0
-    Frame.Parent = ScreenGui
-
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 12)
-    Corner.Parent = Frame
-
-    local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(1, -20, 0, 40)
-    Title.Position = UDim2.fromOffset(10, 12)
-    Title.BackgroundTransparency = 1
-    Title.Text = "Discord"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 24
-    Title.Font = Enum.Font.GothamBold
-    Title.Parent = Frame
-
-    local Username = Instance.new("TextLabel")
-    Username.Size = UDim2.new(1, -20, 0, 35)
-    Username.Position = UDim2.fromOffset(10, 60)
-    Username.BackgroundTransparency = 1
-    Username.Text = "Add me on discord: therealcookiemonsterof1966 Oh and join dsc.gg/abysallhubcontinued"
-    Username.TextColor3 = Color3.fromRGB(180, 180, 180)
-    Username.TextSize = 18
-    Username.Font = Enum.Font.Gotham
-    Username.Parent = Frame
-end
 
 while not Globals.MainUI do task.wait() end
 Abysall.Interface.ApplySettingsTab(Window)
